@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pesquisa de Avaliação de Funcionários</title>
+<style>
+:root{--bg:#eef2f8;--card:#fff;--ink:#0f1f3d;--muted:#5f6d86;--line:#e2e8f1;--soft:#f2f6fc;--accent:#2563eb;--accent2:#1e40af;--star:#f5a623;--off:#ccd4e2;--ok:#16a34a;--err:#dc2626}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#141d33;--ink:#e8eefc;--muted:#9fb0cf;--line:#24304d;--soft:#1a2542;--accent:#6ea0ff;--accent2:#3b6fe0;--off:#3a4868;--ok:#4ade80;--err:#ff8077}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;padding:16px}
+.wrap{max-width:860px;margin:0 auto}
+.hero{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border-radius:18px 18px 0 0;padding:28px}
+.logo{margin-bottom:14px}.logo img{max-height:64px;max-width:240px;display:block;background:#fff;padding:8px 12px;border-radius:10px}.logo .ph{display:inline-block;border:2px dashed rgba(255,255,255,.6);border-radius:10px;padding:12px 22px;font-size:13px;font-weight:700;letter-spacing:.06em;opacity:.85}
+.hero h1{margin:0 0 6px;font-size:clamp(24px,5vw,34px)}
+.hero p{margin:0;opacity:.9}
+.card{background:var(--card);border-radius:0 0 18px 18px;padding:26px;box-shadow:0 6px 24px rgba(15,31,61,.1)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.person{display:flex;align-items:center;gap:18px;background:var(--soft);border-radius:14px;padding:16px}
+.avatar{width:88px;height:88px;border-radius:50%;flex:none;background:var(--accent);color:#fff;display:grid;place-items:center;font-size:30px;font-weight:700;overflow:hidden;border:3px solid var(--card);box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.pinfo{flex:1;min-width:0}
+.pinfo small{color:var(--muted)}
+.cargo{color:var(--muted)}
+select,input[type=text],textarea{width:100%;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px}
+.pinfo select{border:0;background:transparent;font-size:clamp(19px,4vw,26px);font-weight:700;padding:2px 0;cursor:pointer}
+.sec{margin:26px 0 6px;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.crit{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 8px;border-top:1px solid var(--line);flex-wrap:wrap}
+.crit.erro{background:rgba(220,38,38,.08);border-radius:10px}
+.crit b{font-size:16px}
+.ctrl{display:flex;align-items:center;gap:12px}
+.stars{display:inline-flex;flex-direction:row-reverse}
+.stars input,.na input{position:absolute;opacity:0;width:1px;height:1px}
+.stars label{font-size:34px;line-height:1;color:var(--off);cursor:pointer;padding:0 2px;transition:transform .1s}
+.stars input:checked~label,.stars label:hover,.stars label:hover~label{color:var(--star)}
+.stars label:hover{transform:scale(1.15)}
+.stars input:focus-visible+label{outline:3px solid var(--accent);border-radius:6px}
+.na{font-size:13px;color:var(--muted);cursor:pointer;border:1px solid var(--line);border-radius:99px;padding:4px 10px;position:relative}
+.na:has(input:checked){background:var(--accent);color:#fff;border-color:var(--accent)}
+.na:has(input:focus-visible){outline:3px solid var(--accent)}
+.rot{min-width:92px;font-size:13px;color:var(--muted);text-align:right}
+.grid{display:grid;grid-template-columns:1.3fr 1.3fr .8fr;gap:14px}
+label.l{display:block;font-weight:600;margin:0 0 6px;font-size:14px}
+.opt{font-weight:400;color:var(--muted)}
+.box{position:relative;margin-top:14px}
+textarea{min-height:110px;resize:vertical;padding-bottom:28px}
+.count{position:absolute;right:12px;bottom:8px;font-size:13px;color:var(--muted)}
+.btn{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:14px 28px;font:inherit;font-weight:700;cursor:pointer}
+.btn.sec2{background:var(--soft);color:var(--ink)}
+.btn[disabled]{opacity:.55;cursor:default}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}
+.msg{color:var(--err);font-weight:600}
+.banner{border-radius:10px;padding:10px 14px;font-weight:600;margin-bottom:16px}
+.banner.t{background:rgba(220,38,38,.1);color:var(--err)}
+.banner.p{background:rgba(245,166,35,.15);color:var(--ink)}
+.done{text-align:center;padding:30px 8px}
+.done .ck{font-size:56px;color:var(--ok)}
+.hidden{display:none!important}
+.adm{margin-top:24px;border:2px dashed var(--accent);border-radius:14px;padding:18px}
+.adm textarea{min-height:140px;font-family:Consolas,monospace;font-size:12px}
+.arow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.arow input[type=text]{flex:1;min-width:160px}
+@media (max-width:640px){.card{padding:18px}.grid{grid-template-columns:1fr}.crit{flex-direction:column;align-items:flex-start}.person{gap:12px}.avatar{width:70px;height:70px;font-size:24px}.rot{text-align:left}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="hero"><div class="logo" id="logo"></div><h1 id="titulo">Pesquisa de Avaliação de Funcionários</h1><p>Leva poucos minutos. Suas respostas são tratadas de forma confidencial.</p></div>
+ <div class="card">
+  <div class="banner t hidden" id="teste">MODO TESTE: o ENDPOINT não foi configurado. As respostas NÃO estão sendo gravadas na planilha.</div>
+  <div class="banner p hidden" id="pend"></div>
+
+  <form id="f" novalidate>
+   <div class="person">
+    <div class="avatar" id="avatar"></div>
+    <div class="pinfo"><small id="pl">Funcionário avaliado</small><select id="func" aria-labelledby="pl"></select><div class="cargo" id="cargo"></div></div>
+   </div>
+
+   <div class="sec">Critérios (1 = muito insatisfatório · 5 = excelente)</div>
+   <div id="crits"></div>
+
+   <div class="sec">Sobre você</div>
+   <div class="grid">
+    <div><label class="l" for="nome">Nome do avaliador <span class="opt">(opcional)</span></label><input type="text" id="nome" autocomplete="name"></div>
+    <div><label class="l" for="area">Área do avaliador</label><select id="area"><option value="">Selecione…</option></select></div>
+    <div><label class="l" for="dt">Data</label><input type="text" id="dt" readonly></div>
+   </div>
+   <div class="box"><label class="l" for="com">Comentários e sugestões <span class="opt">(opcional)</span></label>
+    <textarea id="com" maxlength="500" placeholder="O que funciona bem? O que poderia melhorar?"></textarea><span class="count" id="cnt">0/500</span></div>
+
+   <div class="actions"><button class="btn" type="submit" id="env">Enviar avaliação</button><span class="msg" id="msg" role="alert"></span></div>
+  </form>
+
+  <div class="done hidden" id="ok"><div class="ck">✓</div><h2>Avaliação enviada. Obrigado!</h2><p style="color:var(--muted)">Você pode avaliar outro funcionário.</p><button class="btn" id="nova">Avaliar outro funcionário</button></div>
+
+  <section class="adm hidden" id="adm">
+   <h2 style="margin:0 0 4px">Modo administrador</h2>
+   <p style="color:var(--muted);margin:0 0 10px">Tudo o que você alterar aqui aparece na página na hora, mas é só uma prévia: ao recarregar, volta ao que está salvo no arquivo. Para valer de verdade, copie o código gerado no fim deste painel e cole no arquivo no lugar do bloco marcado.</p>
+   <h3 style="margin:14px 0 6px">Título e logo</h3>
+   <div class="arow"><input type="text" id="aTit" placeholder="Título da pesquisa"></div>
+   <div class="arow"><input type="file" id="aLogo" accept="image/png,image/jpeg,image/webp"><button class="btn sec2" type="button" id="aLogoRm">Remover logo</button></div>
+   <h3 style="margin:14px 0 6px">Funcionários</h3>
+   <div class="arow"><input type="text" id="aNome" placeholder="Nome"><input type="text" id="aCargo" placeholder="Cargo"><input type="file" id="aFoto" accept="image/*"><button class="btn" type="button" id="aAdd">Adicionar</button></div>
+   <div class="msg" id="aSt" role="status" style="margin:6px 0"></div>
+   <div id="aLista" style="font-size:14px;color:var(--muted)"></div>
+   <label class="l" for="aOut" style="margin-top:12px">Código gerado (título, logo e funcionários)</label><textarea id="aOut" readonly></textarea>
+   <div class="actions"><button class="btn sec2" type="button" id="aCopy">Copiar código</button><button class="btn sec2" type="button" id="aLimpa">Recomeçar lista</button></div>
+  </section>
+ </div>
+</div>
+
+<script>
+/* ============ CONFIGURAÇÃO (edite aqui) ============ */
+var ENDPOINT = "";          // URL do Power Automate ou do Google Apps Script
+var CICLO = "2026-T4";      // identifica a rodada de avaliação
+var AREAS = ["Operações","Finanças","Comercial","Logística / Supply Chain","Compras","TI","RH","Engenharia","Outra"];
+// ===== INÍCIO DO BLOCO GERADO PELO MODO ADMIN =====
+var TITULO = "Pesquisa de Avaliação de Funcionários";
+var LOGO = "";
+var FUNCIONARIOS = [
+ {"id":"ana-souza","nome":"Ana Souza","cargo":"Analista Supply Chain","foto":""},
+ {"id":"carlos-lima","nome":"Carlos Lima","cargo":"Analista Financeiro","foto":""}
+];
+// ===== FIM DO BLOCO GERADO PELO MODO ADMIN =====
+/* ===================================================== */
+var CRIT=[["atendimento","Atendimento e respeito"],["comunicacao","Comunicação"],["equipe","Trabalho em equipe"],["comprometimento","Comprometimento"],["proatividade","Proatividade"],["organizacao","Organização"],["tecnico","Conhecimento técnico"],["entregas","Qualidade das entregas"]];
+var ROT=["","Muito insatisfatório","Insatisfatório","Regular","Bom","Excelente"];
+var $=function(i){return document.getElementById(i)};
+function h(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+function ini(n){var p=(n||"?").trim().split(/\s+/);return (p[0][0]+(p.length>1?p[p.length-1][0]:"")).toUpperCase()}
+function ls(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+var rid=ls("rid")||(Math.random().toString(36).slice(2)+Date.now().toString(36));ls("rid",rid);
+var feitas={};try{feitas=JSON.parse(ls("feitas_"+CICLO)||"{}")}catch(e){feitas={}}
+if(!ENDPOINT)$("teste").classList.remove("hidden");
+
+/* critérios */
+CRIT.forEach(function(c){
+ var d=h("div","crit");d.id="c_"+c[0];d.appendChild(h("b",null,c[1]));
+ var ct=h("div","ctrl"),st=h("div","stars");st.setAttribute("role","radiogroup");st.setAttribute("aria-label",c[1]);
+ for(var n=5;n>=1;n--){var i=document.createElement("input");i.type="radio";i.name=c[0];i.value=n;i.id=c[0]+n;var l=h("label",null,"★");l.htmlFor=i.id;l.title=n+" – "+ROT[n];l.setAttribute("aria-label",n+" estrela"+(n>1?"s":""));st.appendChild(i);st.appendChild(l)}
+ var na=h("label","na");var ni=document.createElement("input");ni.type="radio";ni.name=c[0];ni.value="NA";na.appendChild(ni);na.appendChild(document.createTextNode("N/A"));
+ var rot=h("span","rot","");
+ d.addEventListener("change",function(e){d.classList.remove("erro");$("msg").textContent="";rot.textContent=e.target.value==="NA"?"Sem condições de avaliar":ROT[e.target.value]||""});
+ ct.appendChild(st);ct.appendChild(na);ct.appendChild(rot);d.appendChild(ct);$("crits").appendChild(d);
+});
+function aplicaLogo(){var l=$("logo");l.innerHTML="";var ph=function(){l.innerHTML="";l.appendChild(h("span","ph","SUA LOGO AQUI"))};
+ if(LOGO){var im=new Image();im.alt="Logo da empresa";im.onerror=ph;im.src=LOGO;l.appendChild(im)}else ph()}
+function aplicaTitulo(){$("titulo").textContent=TITULO;document.title=TITULO}
+aplicaLogo();aplicaTitulo();$("dt").value=new Date().toLocaleDateString("pt-BR");
+AREAS.forEach(function(a){var o=h("option",null,a);o.value=a;$("area").appendChild(o)});
+$("com").oninput=function(){$("cnt").textContent=this.value.length+"/500"};
+
+/* funcionário */
+function ativo(){return FUNCIONARIOS.filter(function(p){return p.id===$("func").value})[0]}
+function pinta(){var p=ativo(),a=$("avatar");a.innerHTML="";
+ if(p&&p.foto){var im=new Image();im.alt="";im.onerror=function(){a.innerHTML="";a.textContent=ini(p.nome)};im.src=p.foto;a.appendChild(im)}else a.textContent=ini(p&&p.nome);
+ $("cargo").textContent=p?p.cargo||"":""}
+function monta(){var v=$("func").value;$("func").innerHTML="";
+ FUNCIONARIOS.forEach(function(p){var o=h("option",null,(feitas[p.id]?"✓ ":"")+p.nome);o.value=p.id;$("func").appendChild(o)});
+ if(FUNCIONARIOS.some(function(p){return p.id===v}))$("func").value=v;pinta()}
+function limpa(){var v=$("func").value,a=$("area").value,n=$("nome").value;$("f").reset();$("func").value=v;$("area").value=a;$("nome").value=n;$("cnt").textContent="0/500";$("msg").textContent="";
+ document.querySelectorAll(".crit").forEach(function(c){c.classList.remove("erro");c.querySelector(".rot").textContent=""})}
+$("func").onchange=function(){limpa();pinta()};
+monta();
+
+/* envio com fila de reenvio local */
+function fila(){try{return JSON.parse(ls("fila")||"[]")}catch(e){return[]}}
+function salvaFila(q){ls("fila",JSON.stringify(q));var b=$("pend");if(q.length){b.textContent=q.length+" avaliação(ões) aguardando reenvio. Será tentado de novo automaticamente.";b.classList.remove("hidden")}else b.classList.add("hidden")}
+function post(b){return fetch(ENDPOINT,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)})}
+async function reenvia(){if(!ENDPOINT)return;var q=fila(),r=[];for(var i=0;i<q.length;i++){try{await post(q[i])}catch(e){r.push(q[i])}}if(q.length)salvaFila(r)}
+reenvia();salvaFila(fila());
+
+$("f").onsubmit=async function(ev){
+ ev.preventDefault();
+ var notas={},soma=0,qt=0,falta=null;
+ CRIT.forEach(function(c){var s=document.querySelector('input[name="'+c[0]+'"]:checked'),el=$("c_"+c[0]);
+  if(!s){el.classList.add("erro");if(!falta)falta=el}else if(s.value==="NA")notas[c[0]]="N/A";else{notas[c[0]]=+s.value;soma+=+s.value;qt++}});
+ if(falta){$("msg").textContent="Avalie todos os critérios (use N/A se não puder avaliar).";falta.scrollIntoView({behavior:"smooth",block:"center"});return}
+ if(!$("area").value){$("msg").textContent="Selecione a área do avaliador.";$("area").focus();return}
+ if(!ENDPOINT){$("msg").textContent="Envio não configurado: nada foi gravado.";return}
+ var p=ativo();if(!p)return;
+ var b={ciclo:CICLO,funcionarioId:p.id,funcionario:p.nome,cargo:p.cargo||"",avaliador:$("nome").value.trim(),area:$("area").value,notas:notas,media:qt?Math.round(soma/qt*100)/100:"",comentario:$("com").value.trim(),respondente:rid,data:new Date().toISOString()};
+ $("env").disabled=true;$("msg").textContent="";
+ try{await post(b)}catch(e){var q=fila();q.push(b);salvaFila(q)}
+ feitas[p.id]=1;ls("feitas_"+CICLO,JSON.stringify(feitas));monta();
+ $("f").classList.add("hidden");$("ok").classList.remove("hidden");window.scrollTo(0,0);$("env").disabled=false;
+};
+$("nova").onclick=function(){limpa();$("ok").classList.add("hidden");$("f").classList.remove("hidden");window.scrollTo(0,0)};
+
+/* modo administrador: abra o arquivo com ?admin no final do link */
+if(/[?&]admin\b/.test(location.search)){
+ $("adm").classList.remove("hidden");
+ var slug=function(s){return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")};
+ var aviso=function(t,ok){var e=$("aSt");e.textContent=t;e.style.color=ok?"var(--ok)":"var(--err)"};
+ var gera=function(){
+  monta();
+  $("aOut").value="// ===== INÍCIO DO BLOCO GERADO PELO MODO ADMIN =====\nvar TITULO = "+JSON.stringify(TITULO)+";\nvar LOGO = "+JSON.stringify(LOGO)+";\nvar FUNCIONARIOS = [\n"+FUNCIONARIOS.map(function(p){return " "+JSON.stringify({id:p.id,nome:p.nome,cargo:p.cargo,foto:p.foto})}).join(",\n")+"\n];\n// ===== FIM DO BLOCO GERADO PELO MODO ADMIN =====";
+  var L=$("aLista");L.innerHTML="";
+  if(!FUNCIONARIOS.length)L.appendChild(h("div",null,"Nenhum funcionário na lista."));
+  FUNCIONARIOS.forEach(function(p){
+   var r=h("div","arow");r.appendChild(h("span",null,p.nome+(p.cargo?" — "+p.cargo:"")+(p.foto?" (com foto)":"")));
+   var b=h("button","btn sec2","Remover");b.type="button";b.style.padding="6px 12px";
+   b.onclick=function(){var k=FUNCIONARIOS.indexOf(p);if(k>-1)FUNCIONARIOS.splice(k,1);aviso(p.nome+" removido.",true);gera()};
+   r.appendChild(b);L.appendChild(r)});
+ };
+ var reduz=function(file){return new Promise(function(res,rej){var r=new FileReader();r.onerror=rej;r.onload=function(){var im=new Image();im.onerror=rej;im.onload=function(){var s=240,c=document.createElement("canvas"),m=Math.min(im.width,im.height),x=(im.width-m)/2,y=(im.height-m)/2;c.width=c.height=s;c.getContext("2d").drawImage(im,x,y,m,m,0,0,s,s);res(c.toDataURL("image/jpeg",.82))};im.src=r.result};r.readAsDataURL(file)})};
+ $("aAdd").onclick=async function(){
+  var n=$("aNome").value.trim();if(!n){aviso("Informe o nome.");return}
+  var id=slug(n)||("func-"+Date.now()),f=$("aFoto").files[0],foto="";
+  if(f){try{foto=await reduz(f)}catch(e){aviso("Não foi possível ler a foto. O funcionário foi adicionado sem foto.")}}
+  var k=FUNCIONARIOS.findIndex(function(p){return p.id===id}),obj={id:id,nome:n,cargo:$("aCargo").value.trim(),foto:foto};
+  if(k>-1)FUNCIONARIOS[k]=obj;else FUNCIONARIOS.push(obj);
+  $("aNome").value="";$("aCargo").value="";$("aFoto").value="";
+  $("func").value=id;pinta();
+  aviso(n+" adicionado.",true);gera();
+ };
+ $("aCopy").onclick=function(){var t=$("aOut"),b=this;t.select();try{navigator.clipboard.writeText(t.value)}catch(e){document.execCommand("copy")}b.textContent="Copiado!";setTimeout(function(){b.textContent="Copiar código"},1500)};
+ $("aLimpa").onclick=function(){FUNCIONARIOS.length=0;aviso("Lista apagada.",true);gera()};
+ var reduzLogo=function(file){return new Promise(function(res,rej){var r=new FileReader();r.onerror=rej;r.onload=function(){var im=new Image();im.onerror=rej;im.onload=function(){var k=Math.min(1,400/im.width,120/im.height),w=Math.round(im.width*k),hh=Math.round(im.height*k),c=document.createElement("canvas");c.width=w;c.height=hh;c.getContext("2d").drawImage(im,0,0,w,hh);res(c.toDataURL(file.type==="image/jpeg"?"image/jpeg":"image/png",.9))};im.src=r.result};r.readAsDataURL(file)})};
+ $("aTit").value=TITULO;
+ $("aTit").oninput=function(){TITULO=this.value.trim()||"Pesquisa de Avaliação de Funcionários";aplicaTitulo();gera()};
+ $("aLogo").onchange=async function(){var f=this.files[0];if(!f)return;try{LOGO=await reduzLogo(f);aplicaLogo();aviso("Logo atualizada.",true);gera()}catch(e){aviso("Não foi possível ler a logo.")}this.value=""};
+ $("aLogoRm").onclick=function(){LOGO="";aplicaLogo();aviso("Logo removida.",true);gera()};
+ gera();
+}
+</script>
+</body>
+</html>
